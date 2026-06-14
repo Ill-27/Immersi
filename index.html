@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Драконий чих - Cinematic Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;700&display=swap');
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #000;
+            color: #eaeaea;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Стартовый экран */
+        #start-screen {
+            position: fixed; inset: 0;
+            background: #000; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease;
+        }
+
+        #start-btn {
+            padding: 15px 30px; font-family: 'Montserrat', sans-serif;
+            font-size: 16px; letter-spacing: 2px;
+            background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 30px; cursor: pointer; text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        #start-btn:active { background: #fff; color: #000; }
+
+        /* Кинематографичные фоны */
+        .bg-layer {
+            position: fixed; inset: 0;
+            background-size: cover; background-position: center;
+            opacity: 0; z-index: 0;
+            transition: transform 10s linear; /* Медленный зум */
+        }
+        
+        .bg-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: 1; pointer-events: none;
+        }
+
+        /* Текстовые блоки */
+        #content { position: relative; z-index: 10; width: 100%; padding-top: 10vh; }
+
+        .scene {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 20px;
+        }
+
+        .text-panel {
+            background: rgba(10, 10, 15, 0.65);
+            backdrop-filter: blur(12px); /* Эффект матового стекла */
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            opacity: 0; transform: translateY(30px); /* Для анимации появления */
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif; font-size: 2.5rem; text-align: center;
+            color: #fff; margin: 0 0 10px 0; letter-spacing: 2px;
+        }
+
+        h2 {
+            text-align: center; font-style: italic; color: #aaa;
+            font-weight: 300; font-size: 1.2rem; margin-bottom: 20px;
+        }
+
+        p { margin-bottom: 20px; }
+        p:last-child { margin-bottom: 0; }
+
+        .dialogue { color: #f4d03f; font-style: italic; }
+        .highlight { color: #ff5500; font-weight: bold; }
+        
+        /* Визуальный акцент для рева */
+        .impact-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem; text-align: center; color: #fff;
+            text-transform: uppercase; letter-spacing: 4px;
+            text-shadow: 0 0 20px #ff0000;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <h1 style="font-size: 1.8rem; margin-bottom: 30px;">Иммерсивный формат</h1>
+        <button id="start-btn">Начать чтение</button>
+        <p style="font-family: Montserrat; font-size: 11px; color: #555; margin-top: 20px;">Включите звук на устройстве</p>
+    </div>
+
+    <div class="bg-layer" id="bg-1" style="background-image: url('https://images.unsplash.com/photo-1518331647614-7a1f04cd34cb?q=80&w=1000&auto=format&fit=crop');"></div>
+    <div class="bg-layer" id="bg-2" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop');"></div>
+    <div class="bg-layer" id="bg-3" style="background-image: url('https://images.unsplash.com/photo-1504173010664-32509aeebb62?q=80&w=1000&auto=format&fit=crop');"></div>
+    
+    <div class="bg-overlay"></div>
+
+    <div id="content">
+        
+        <div class="scene" data-bg="bg-1">
+            <div class="text-panel">
+                <h1>Драконий чих</h1>
+                <h2>или Отскребайте мага<br>Кристина Юраш</h2>
+                <p><strong>Пролог</strong></p>
+                <p>Я – не из тех, кто сдается. Я из тех, у кого не принимают.</p>
+                <p><span class="dialogue">– Ангелиза Дэй! О чем это вы там замечтались? Ну расскажите всем нам! Не стесняйтесь! Нам тоже очень интересно!</span> – послышался голос преподавателя прямо над ухом.</p>
+            </div>
+        </div>
+
+        <div class="scene" data-bg="bg-1">
+            <div class="text-panel">
+                <p>Это было не самое заветное желание – выглядеть старательной студенткой после бессонной ночи. С разорванными трусами, в жеваном носке, в мятой форме в обнимку со слюнявым конспектом.</p>
+                <p>Самым заветным желание было вернуться обратно в комнату. И проверить, все ли там в порядке! Или просто вернуться в комнату и проверить, есть ли у меня вообще комната?</p>
+            </div>
+        </div>
+
+        <div class="scene" data-bg="bg-2">
+            <div class="text-panel">
+                <p><span class="dialogue">– Перейдем к проверке домашнего задания! И защитное зелье нам сварит… Ангелиза, к доске!</span> – улыбнулся преподаватель. – <span class="dialogue">Порадуйте меня!</span></p>
+                <p>Котел блестел, как нализанные кошачьи причиндалы. Сотни склянок гнездились в огромных шкафах. Каждая из них соблазнительно шептала: <span class="dialogue">«Возьми меня и устрой им конец света!»</span>.</p>
+            </div>
+        </div>
+
+        <div class="scene" data-bg="bg-2">
+            <div class="text-panel">
+                <p>Уже через минуту стало понятно, что со мной зелья не сваришь. Мой страдальческий взгляд умолял отпустить меня обратно за парту.</p>
+                <p><span class="dialogue">– Вы что? Влюбились?</span> – на меня посмотрели выразительно.</p>
+                <p><span class="dialogue">– У нее парень есть!</span> – крикнул кто-то с галерки. – <span class="dialogue">Она с сыном ректора зелье мутит!</span></p>
+            </div>
+        </div>
+
+        <div class="scene" data-bg="bg-1">
+            <div class="text-panel">
+                <p>Я сделала глубокий вдох. И приготовилась принимать позор на свою рыжую покаянную голову.</p>
+                <p>И тут в утренней тишине послышался громкий, раскатистый звук. Он был похож на чей-то рев. Словно эхо в горах.</p>
+                <p>В окна ударил ветер. Цветные стекла загудели под его натиском.</p>
+            </div>
+        </div>
+
+        <div class="scene" id="dragon-trigger" data-bg="bg-3">
+            <div class="text-panel">
+                <p>Вдруг все потемнело. Словно на секунду померкло солнце. А на Академию легла огромная тень облаков.</p>
+                <p>Тут же стало ослепительно светло. Словно что-то огромное стремительно пролетело, заслоняя солнце.</p>
+                <p class="impact-text">Когда я сыпала тертую драконью кость, над башней послышался оглушительный рев.</p>
+            </div>
+        </div>
+
+        <div class="scene" data-bg="bg-3">
+            <div class="text-panel">
+                <p>Пугающий, словно раскат грома. Он заставил меня подпрыгнуть на месте.</p>
+                <p><span class="highlight">«Вжух-вжух!»</span>, – слышался звук, как-будто кто-то пускает мощные заклинания.</p>
+                <p><span class="highlight">«Тыдышь!»</span>, – обрушилось что-то совсем близко. По подоконнику застучала каменная крошка.</p>
+            </div>
+        </div>
+
+        <div class="scene" data-bg="bg-3">
+            <div class="text-panel">
+                <p>Котел снова подпрыгнул. Башня зашаталась, как при землетрясении. Колбы, банки, склянки слетели с полок. Они брызгали стеклом, рассыпались порошками, растекались ядовито-цветными дымками и лужами.</p>
+                <p>Прямо в окна ударил закат. Яркий, оранжево-красный ослепительный. И подозрительно преждевременный. Закат распахивал створки и сжигал шторы.</p>
+                <p><span class="dialogue" style="color: #ffaa55;">– Уважаемые студенты и преподаватели! Просьба пройти в главный зал! Это не учебная тревога!</span> – раздался пронзительно громкий голос.</p>
+            </div>
+        </div>
+
+        <div style="height: 20vh;"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- Аудио Движок (Синтезатор, работает 100% без внешних файлов) ---
+        let audioCtx;
+        let isAudioUnlocked = false;
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-screen').style.opacity = '0';
+            setTimeout(() => document.getElementById('start-screen').style.display = 'none', 800);
+            
+            // Разблокировка AudioContext
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx.resume().then(() => { isAudioUnlocked = true; });
+        });
+
+        // Функция создания мощного "гула/взрыва" программно
+        function playImpactSound() {
+            if (!isAudioUnlocked || !audioCtx) return;
+            
+            // Низкочастотный бас
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(60, audioCtx.currentTime); // Старт с 60Hz
+            osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 2.5); // Падение до 10Hz
+            
+            gain.gain.setValueAtTime(1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.5);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 2.5);
+
+            // Вибрация телефона (на Android)
+            if ("vibrate" in navigator) {
+                navigator.vibrate([100, 50, 500, 100, 800]); 
+            }
+        }
+
+        // --- Управление фонами ---
+        let currentBg = null;
+
+        document.querySelectorAll('.scene').forEach(scene => {
+            const bgId = scene.getAttribute('data-bg');
+            
+            // Анимация появления текста
+            const textPanel = scene.querySelector('.text-panel');
+            gsap.to(textPanel, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: scene,
+                    start: "top 75%",
+                    end: "bottom 25%",
+                    toggleActions: "play reverse play reverse"
+                }
+            });
+
+            // Смена фонов
+            ScrollTrigger.create({
+                trigger: scene,
+                start: "top 60%",
+                onEnter: () => changeBackground(bgId),
+                onEnterBack: () => changeBackground(bgId)
+            });
+        });
+
+        function changeBackground(bgId) {
+            if (currentBg === bgId) return;
+            currentBg = bgId;
+            
+            // Скрываем все фоны
+            document.querySelectorAll('.bg-layer').forEach(bg => {
+                bg.style.opacity = '0';
+                bg.style.transform = 'scale(1)'; // Сброс зума
+            });
+            
+            // Показываем нужный с легким эффектом приближения (Ken Burns)
+            const activeBg = document.getElementById(bgId);
+            if (activeBg) {
+                activeBg.style.opacity = '0.6'; // Не 100%, чтобы текст читался
+                activeBg.style.transform = 'scale(1.1)';
+            }
+        }
+
+        // --- Триггер на сцену с драконом ---
+        let impactPlayed = false;
+        ScrollTrigger.create({
+            trigger: "#dragon-trigger",
+            start: "top 50%",
+            onEnter: () => {
+                if (!impactPlayed) {
+                    playImpactSound();
+                    impactPlayed = true;
+                    // Легкая тряска экрана
+                    gsap.fromTo("body", {x: -5}, {x: 5, duration: 0.1, yoyo: true, repeat: 10, clearProps: "x"});
+                }
+            },
+            onLeaveBack: () => { impactPlayed = false; } // Чтобы при скролле вверх звук можно было услышать снова
+        });
+    </script>
+</body>
+</html>
