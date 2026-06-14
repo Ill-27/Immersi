@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Драконий чих - Иммерсивная книга (AAA Прототип)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@300;400;700&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+            font-size: 22px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Стартовый экран для разблокировки аудио */
+        #start-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #050505;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        #start-btn {
+            padding: 20px 40px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            letter-spacing: 3px;
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #start-btn:active {
+            background: #d4af37;
+            color: #000;
+        }
+
+        /* WebGL Холст */
+        #webgl-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Контейнер для текста */
+        #content {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            pointer-events: none; /* Чтобы скролл не цеплялся за текст */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 25px;
+            pointer-events: auto;
+        }
+
+        .scene {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10vh 0;
+            opacity: 0; /* Управляется GSAP */
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            text-align: center;
+            color: #d4af37;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+            margin-bottom: 0;
+        }
+
+        h2 {
+            text-align: center;
+            font-style: italic;
+            color: #aaa;
+            font-weight: 300;
+            margin-bottom: 50px;
+        }
+
+        p {
+            margin-bottom: 30px;
+            text-shadow: 0px 4px 15px rgba(0,0,0,1);
+            font-size: 1.1rem;
+        }
+
+        .dialogue { color: #f0e6d2; font-style: italic; }
+        .highlight { color: #ff5500; font-weight: bold; text-shadow: 0 0 10px red; }
+
+        /* Для эффекта разлетающегося текста */
+        .word {
+            display: inline-block;
+            transition: transform 0.1s;
+        }
+
+        /* Виньетка для глубины */
+        #vignette {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 100%);
+            z-index: 5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <h1 style="font-size: 2rem; margin-bottom: 40px;">Драконий чих</h1>
+        <button id="start-btn">Погрузиться в историю</button>
+        <p style="margin-top: 20px; font-family: Montserrat; font-size: 12px; color: #666;">Рекомендуется использовать наушники</p>
+    </div>
+
+    <canvas id="webgl-canvas"></canvas>
+    <div id="vignette"></div>
+
+    <div id="content">
+        <div class="container">
+            
+            <div class="scene" id="scene-title">
+                <h1>Драконий чих</h1>
+                <h2>или Отскребайте мага<br><br>Кристина Юраш</h2>
+            </div>
+
+            <div class="scene" id="scene-1">
+                <p><strong>Пролог</strong></p>
+                <p>Я – не из тех, кто сдается.<br>Я из тех, у кого не принимают.</p>
+                <p><span class="dialogue">– Ангелиза Дэй! О чем это вы там замечтались? Ну расскажите всем нам! Не стесняйтесь! Нам тоже очень интересно!</span> – послышался голос преподавателя прямо над ухом.</p>
+                <p>Это было не самое заветное желание – выглядеть старательной студенткой после бессонной ночи. С разорванными трусами, в жеваном носке, в мятой форме в обнимку со слюнявым конспектом.</p>
+            </div>
+
+            <div class="scene" id="scene-2">
+                <p><span class="dialogue">– Перейдем к проверке домашнего задания! И защитное зелье нам сварит… Ангелиза, к доске!</span> – улыбнулся преподаватель. – <span class="dialogue">Порадуйте меня!</span></p>
+                <p>Котел блестел, как нализанные кошачьи причиндалы.</p>
+                <p>Сотни склянок гнездились в огромных шкафах. Каждая из них соблазнительно шептала: <span class="dialogue">«Возьми меня и устрой им конец света!»</span>.</p>
+            </div>
+
+            <div class="scene" id="scene-3">
+                <p>Уже через минуту стало понятно, что со мной зелья не сваришь.</p>
+                <p><span class="dialogue">– У нее парень есть!</span> – крикнул кто-то с галерки. – <span class="dialogue">Она с сыном ректора зелье мутит!</span></p>
+                <p>Я сделала глубокий вдох. И приготовилась принимать позор на свою рыжую покаянную голову.</p>
+                <p style="text-align: center; font-size: 1.3em; color: #ccc;">И тут в утренней тишине послышался громкий, раскатистый звук.</p>
+            </div>
+
+            <div class="scene destructible" id="scene-4">
+                <p>В окна ударил ветер. Цветные стекла загудели под его натиском. Дальнее окно распахнулась настежь.</p>
+                <p>Странный звук, похожий на рев, стал громче. И смех прекратился.</p>
+                <p>Вдруг все потемнело. Словно на секунду померкло солнце. А на Академию легла огромная тень облаков.</p>
+                <p>Тут же стало ослепительно светло. Словно что-то огромное стремительно пролетело, заслоняя солнце.</p>
+            </div>
+
+            <div class="scene destructible" id="scene-5">
+                <p>В котле бурлил желтый «чай-мочай». А должно быть зеленым! Огромные пузыри лопались.</p>
+                <p class="highlight" style="font-size: 1.4em; text-align: center; margin: 50px 0;">Когда я сыпала тертую драконью кость, над башней послышался оглушительный рев.</p>
+                <p>Пугающий, словно раскат грома. Он заставил меня подпрыгнуть на месте.</p>
+            </div>
+
+            <div class="scene destructible" id="scene-6">
+                <p><span class="highlight">«Вжух-вжух!»</span>, – слышался звук, как-будто кто-то пускает мощные заклинания.</p>
+                <p><span class="highlight">«Тыдышь!»</span>, – обрушилось что-то совсем близко. По подоконнику застучала каменная крошка.</p>
+                <p>Котел снова подпрыгнул. Башня зашаталась, как при землетрясении. Колбы, банки, склянки слетели с полок. Они брызгали стеклом, рассыпались порошками, растекались ядовито-цветными дымками и лужами.</p>
+                <p>Прямо в окна ударил закат. Яркий, оранжево-красный ослепительный. И подозрительно преждевременный. Закат распахивал створки и сжигал шторы.</p>
+                <p><span class="dialogue" style="color: #ffaa55;">– Уважаемые студенты и преподаватели! Просьба пройти в главный зал! Это не учебная тревога!</span></p>
+            </div>
+
+            <div style="height: 40vh;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // --- 1. АУДИО ДВИЖОК ---
+        const audioContext = {
+            ambient: new Audio('https://upload.wikimedia.org/wikipedia/commons/4/4e/Cave_water_drops.ogg'), // Подземелье
+            potion: new Audio('https://upload.wikimedia.org/wikipedia/commons/1/1a/Boiling_water.ogg'),     // Зелье
+            roar: new Audio('https://upload.wikimedia.org/wikipedia/commons/b/b3/Roaring_Lion.ogg'),        // Замена рева
+            quake: new Audio('https://upload.wikimedia.org/wikipedia/commons/2/22/Volcano_eruption_sound.ogg') // Разрушение
+        };
+
+        // Настройки аудио
+        audioContext.ambient.loop = true; audioContext.ambient.volume = 0;
+        audioContext.potion.loop = true; audioContext.potion.volume = 0;
+        audioContext.quake.loop = true; audioContext.quake.volume = 0;
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-screen').style.opacity = '0';
+            setTimeout(() => document.getElementById('start-screen').style.display = 'none', 1000);
+            
+            // Запуск аудио
+            audioContext.ambient.play();
+            audioContext.potion.play();
+            audioContext.quake.play();
+            
+            // Плавное появление звука
+            gsap.to(audioContext.ambient, { volume: 0.5, duration: 2 });
+            initImmersiveExperience();
+        });
+
+        // --- 2. РАЗДЕЛЕНИЕ ТЕКСТА (Для эффекта взрыва) ---
+        document.querySelectorAll('.destructible p').forEach(p => {
+            const words = p.innerText.split(' ');
+            p.innerHTML = '';
+            words.forEach(word => {
+                const span = document.createElement('span');
+                span.className = 'word';
+                span.innerText = word + ' ';
+                p.appendChild(span);
+            });
+        });
+
+        // --- 3. WEBGL THREE.JS (Частицы и Магия) ---
+        const canvas = document.getElementById('webgl-canvas');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.002);
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 100;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Создаем частицы
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 3000;
+        const posArray = new Float32Array(particlesCount * 3);
+        const colorsArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 400; // Разброс
+            colorsArray[i] = Math.random(); // Базовый цвет
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+
+        // Кастомный материал
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 1.5,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Глобальные переменные состояния
+        let state = {
+            particleSpeed: 0.001,
+            colorR: 0.2, colorG: 0.3, colorB: 0.8, // Старт: Синий магический
+            cameraShake: 0
+        };
+
+        // Анимация WebGL
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            particlesMesh.rotation.y += state.particleSpeed;
+            particlesMesh.rotation.x += state.particleSpeed * 0.5;
+
+            // Динамическая смена цвета частиц
+            particlesMaterial.color.setRGB(state.colorR, state.colorG, state.colorB);
+
+            // Тряска камеры (Землетрясение)
+            if (state.cameraShake > 0) {
+                camera.position.x = (Math.random() - 0.5) * state.cameraShake;
+                camera.position.y = (Math.random() - 0.5) * state.cameraShake;
+            } else {
+                camera.position.x = 0;
+                camera.position.y = 0;
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Ресайз
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- 4. GSAP & SCROLLTRIGGER (Сценарий) ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        function initImmersiveExperience() {
+            
+            // Базовое появление текста
+            gsap.utils.toArray('.scene').forEach(scene => {
+                gsap.to(scene, {
+                    opacity: 1,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: scene,
+                        start: "top 70%",
+                        end: "bottom 30%",
+                        toggleActions: "play reverse play reverse"
+                    }
+                });
+            });
+
+            // Сцена 2: Зелье (Смена атмосферы на зеленую, звук кипения)
+            ScrollTrigger.create({
+                trigger: "#scene-2",
+                start: "top center",
+                onEnter: () => {
+                    gsap.to(state, { colorR: 0.1, colorG: 0.8, colorB: 0.2, particleSpeed: 0.005, duration: 2 });
+                    gsap.to(audioContext.potion, { volume: 0.6, duration: 2 });
+                },
+                onLeaveBack: () => {
+                    gsap.to(state, { colorR: 0.2, colorG: 0.3, colorB: 0.8, particleSpeed: 0.001, duration: 2 });
+                    gsap.to(audioContext.potion, { volume: 0, duration: 2 });
+                }
+            });
+
+            // Сцена 4-5: Приближение Дракона (Нагнетание)
+            ScrollTrigger.create({
+                trigger: "#scene-4",
+                start: "top center",
+                onEnter: () => {
+                    // Переход в красный (огонь)
+                    gsap.to(state, { colorR: 1.0, colorG: 0.2, colorB: 0.0, particleSpeed: 0.015, duration: 1.5 });
+                    gsap.to(audioContext.ambient, { volume: 0, duration: 1 });
+                    gsap.to(audioContext.potion, { volume: 0, duration: 1 });
+                    audioContext.roar.volume = 0.8;
+                    audioContext.roar.play(); // Разовый звук рева
+                },
+                onLeaveBack: () => {
+                    gsap.to(state, { colorR: 0.1, colorG: 0.8, colorB: 0.2, particleSpeed: 0.005, duration: 1.5 });
+                }
+            });
+
+            // Сцена 6: Разрушение (Камера трясется, текст разлетается)
+            ScrollTrigger.create({
+                trigger: "#scene-6",
+                start: "top 60%",
+                onEnter: () => {
+                    // Хаос частиц и тряска камеры
+                    gsap.to(state, { particleSpeed: 0.05, cameraShake: 5, duration: 0.5 });
+                    gsap.to(audioContext.quake, { volume: 1, duration: 1 });
+
+                    // Уничтожаем предыдущие тексты (сгорание/разлет)
+                    gsap.to('.destructible .word', {
+                        x: () => (Math.random() - 0.5) * 500,
+                        y: () => (Math.random() - 0.5) * 500,
+                        z: () => (Math.random() - 0.5) * 500,
+                        opacity: 0,
+                        rotation: () => Math.random() * 360,
+                        duration: 1.5,
+                        stagger: 0.01,
+                        ease: "power4.out"
+                    });
+                },
+                onLeaveBack: () => {
+                    gsap.to(state, { particleSpeed: 0.015, cameraShake: 0, duration: 1 });
+                    gsap.to(audioContext.quake, { volume: 0, duration: 1 });
+                    
+                    // Возвращаем текст
+                    gsap.to('.destructible .word', {
+                        x: 0, y: 0, z: 0, opacity: 1, rotation: 0,
+                        duration: 0.5, stagger: 0.005
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
