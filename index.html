@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Драконий чих - Mind's Eye Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&display=swap');
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #050505; color: #dcdcdc;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px; line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Стартовый экран */
+        #start-screen {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        #start-btn {
+            padding: 15px 40px; font-family: sans-serif; font-size: 14px; letter-spacing: 3px;
+            background: transparent; color: #aaa; border: 1px solid #aaa;
+            border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        #start-btn:active { background: #aaa; color: #000; }
+
+        /* WebGL Холст для "Смутных образов" */
+        #webgl-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none; opacity: 0.8;
+        }
+
+        /* Текст */
+        #content {
+            position: relative; z-index: 10; width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .scene {
+            width: 100%; max-width: 650px; min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 0 20px; opacity: 0; transform: translateY(20px);
+        }
+
+        p { margin-bottom: 25px; text-shadow: 0 2px 10px rgba(0,0,0,1); }
+        .dialogue { color: #e6ccaa; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <button id="start-btn">Погрузиться</button>
+    </div>
+
+    <canvas id="webgl-canvas"></canvas>
+
+    <div id="content">
+        <div class="scene" data-color="0.1, 0.1, 0.15" data-speed="0.2" data-wind="300">
+            <p><strong>Пролог</strong></p>
+            <p>Я – не из тех, кто сдается.<br>Я из тех, у кого не принимают.</p>
+            <p><span class="dialogue">– Ангелиза Дэй! О чем это вы там замечтались? Ну расскажите всем нам! Не стесняйтесь! Нам тоже очень интересно!</span> – послышался голос преподавателя прямо над ухом.</p>
+            <p>Это было не самое заветное желание – выглядеть старательной студенткой после бессонной ночи. С разорванными трусами, в жеваном носке, в мятой форме в обнимку со слюнявым конспектом.</p>
+        </div>
+
+        <div class="scene" data-color="0.05, 0.2, 0.1" data-speed="0.5" data-wind="150">
+            <p><span class="dialogue">– Перейдем к проверке домашнего задания! И защитное зелье нам сварит… Ангелиза, к доске!</span> – улыбнулся преподаватель. – <span class="dialogue">Порадуйте меня!</span></p>
+            <p>Котел блестел, как нализанные кошачьи причиндалы.</p>
+            <p>Сотни склянок гнездились в огромных шкафах. Каждая из них соблазнительно шептала: <span class="dialogue">«Возьми меня и устрой им конец света!»</span>.</p>
+        </div>
+
+        <div class="scene" data-color="0.02, 0.02, 0.05" data-speed="0.8" data-wind="100">
+            <p>Уже через минуту стало понятно, что со мной зелья не сваришь.</p>
+            <p><span class="dialogue">– У нее парень есть!</span> – крикнул кто-то с галерки. – <span class="dialogue">Она с сыном ректора зелье мутит!</span></p>
+            <p>Я сделала глубокий вдох. И приготовилась принимать позор на свою рыжую покаянную голову.</p>
+            <p>И тут в утренней тишине послышался громкий, раскатистый звук.</p>
+        </div>
+
+        <div class="scene" id="dragon-trigger" data-color="0.4, 0.05, 0.0" data-speed="2.5" data-wind="800">
+            <p>В окна ударил ветер. Цветные стекла загудели под его натиском. Дальнее окно распахнулась настежь.</p>
+            <p>Вдруг все потемнело. Словно на секунду померкло солнце. А на Академию легла огромная тень облаков.</p>
+            <p>Тут же стало ослепительно светло. Словно что-то огромное стремительно пролетело, заслоняя солнце.</p>
+            <p>Когда я сыпала тертую драконью кость, над башней послышался оглушительный рев.</p>
+        </div>
+
+        <div class="scene" data-color="0.5, 0.2, 0.0" data-speed="3.0" data-wind="1200">
+            <p>Пугающий, словно раскат грома. Он заставил меня подпрыгнуть на месте.</p>
+            <p>«Вжух-вжух!», – слышался звук, как-будто кто-то пускает мощные заклинания.</p>
+            <p>«Тыдышь!», – обрушилось что-то совсем близко. По подоконнику застучала каменная крошка.</p>
+            <p>Котел снова подпрыгнул. Башня зашаталась, как при землетрясении. Колбы, банки, склянки слетели с полок.</p>
+            <p><span class="dialogue">– Уважаемые студенты и преподаватели! Просьба пройти в главный зал! Это не учебная тревога!</span></p>
+        </div>
+        
+        <div style="height: 30vh;"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // === 1. НЕПРЕРЫВНЫЙ АУДИО-ДВИЖОК (Процедурный эмбиент) ===
+        let audioCtx, noiseNode, windFilter, masterGain;
+        let isAudioPlaying = false;
+
+        function initAudio() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Создаем белый шум (основа для ветра/гула)
+            const bufferSize = audioCtx.sampleRate * 2;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
+            
+            noiseNode = audioCtx.createBufferSource();
+            noiseNode.buffer = buffer;
+            noiseNode.loop = true;
+
+            // Фильтр превращает белый шум в ветер/гул
+            windFilter = audioCtx.createBiquadFilter();
+            windFilter.type = 'lowpass';
+            windFilter.frequency.value = 300; // Начальная частота (глухой гул)
+
+            masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0; // Начинаем с тишины
+
+            noiseNode.connect(windFilter);
+            windFilter.connect(masterGain);
+            masterGain.connect(audioCtx.destination);
+            
+            noiseNode.start();
+            masterGain.gain.setTargetAtTime(0.5, audioCtx.currentTime, 2); // Плавное нарастание громкости
+            isAudioPlaying = true;
+        }
+
+        // Тот самый басовый удар
+        function playImpactSound() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(80, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 2);
+            gain.gain.setValueAtTime(1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 2);
+            if ("vibrate" in navigator) navigator.vibrate([100, 50, 400]); 
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-screen').style.opacity = '0';
+            setTimeout(() => document.getElementById('start-screen').style.display = 'none', 1000);
+            initAudio();
+        });
+
+        // === 2. ВИЗУАЛ: ШЕЙДЕР "ВНУТРЕННЕГО ВЗОРА" (Three.js + GLSL) ===
+        const canvas = document.getElementById('webgl-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        const scene3D = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+        // Математика абстрактного тумана (Шейдер)
+        const fragmentShader = `
+            uniform float time;
+            uniform vec3 color;
+            uniform float turbulence;
+            varying vec2 vUv;
+            
+            // Функция псевдослучайного шума
+            float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+            float noise(vec2 p) {
+                vec2 i = floor(p); vec2 f = fract(p);
+                vec2 u = f * f * (3.0 - 2.0 * f);
+                return mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
+                           mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
+            }
+            // Фрактальное броуновское движение (создает "дым")
+            float fbm(vec2 p) {
+                float v = 0.0; float a = 0.5;
+                for (int i=0; i<5; i++) { v += a * noise(p); p *= 2.0; a *= 0.5; }
+                return v;
+            }
+            void main() {
+                vec2 uv = vUv * 3.0; // Масштаб тумана
+                float t = time * turbulence;
+                // Движение тумана
+                vec2 q = vec2(fbm(uv + vec2(0.0, t)), fbm(uv + vec2(1.0, t)));
+                vec2 r = vec2(fbm(uv + 1.0 * q + vec2(1.7, 9.2) + 0.15 * t), fbm(uv + 1.0 * q + vec2(8.3, 2.8) + 0.126 * t));
+                float f = fbm(uv + r);
+                
+                // Смешивание с базовым цветом
+                vec3 finalColor = mix(vec3(0.0), color, f * 2.0);
+                // Темные края (виньетка)
+                float vignette = 1.0 - smoothstep(0.5, 1.5, length(vUv - 0.5) * 2.0);
+                gl_FragColor = vec4(finalColor * vignette, 1.0);
+            }
+        `;
+
+        const vertexShader = `
+            varying vec2 vUv;
+            void main() { vUv = uv; gl_Position = vec4(position, 1.0); }
+        `;
+
+        const uniforms = {
+            time: { value: 0 },
+            color: { value: new THREE.Color(0.1, 0.1, 0.15) }, // Начальный цвет
+            turbulence: { value: 0.2 } // Начальная скорость бурления
+        };
+
+        const material = new THREE.ShaderMaterial({ uniforms, fragmentShader, vertexShader });
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+        scene3D.add(plane);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            uniforms.time.value += 0.01;
+            renderer.render(scene3D, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => { renderer.setSize(window.innerWidth, window.innerHeight); });
+
+        // === 3. СВЯЗКА СКРОЛЛА С ВИЗУАЛОМ И АУДИО ===
+        gsap.registerPlugin(ScrollTrigger);
+
+        let impactPlayed = false;
+
+        document.querySelectorAll('.scene').forEach(scene => {
+            // Плавное появление текста
+            gsap.to(scene, {
+                opacity: 1, y: 0, duration: 1.5,
+                scrollTrigger: { trigger: scene, start: "top 70%", end: "bottom 30%", toggleActions: "play reverse play reverse" }
+            });
+
+            // Изменение окружения (Шейдера и Звука) при чтении
+            ScrollTrigger.create({
+                trigger: scene,
+                start: "top 50%",
+                onEnter: () => {
+                    // Парсим данные из HTML
+                    const colorData = scene.getAttribute('data-color').split(',').map(parseFloat);
+                    const targetSpeed = parseFloat(scene.getAttribute('data-speed'));
+                    const targetWind = parseFloat(scene.getAttribute('data-wind'));
+
+                    // Плавно меняем цвет и скорость тумана
+                    gsap.to(uniforms.color.value, { r: colorData[0], g: colorData[1], b: colorData[2], duration: 2 });
+                    gsap.to(uniforms.turbulence, { value: targetSpeed, duration: 2 });
+
+                    // Плавно меняем частоту звука (от глухого ветра к свистящему)
+                    if (isAudioPlaying) {
+                        windFilter.frequency.setTargetAtTime(targetWind, audioCtx.currentTime, 1);
+                    }
+                },
+                onEnterBack: () => {
+                    const colorData = scene.getAttribute('data-color').split(',').map(parseFloat);
+                    const targetSpeed = parseFloat(scene.getAttribute('data-speed'));
+                    const targetWind = parseFloat(scene.getAttribute('data-wind'));
+                    gsap.to(uniforms.color.value, { r: colorData[0], g: colorData[1], b: colorData[2], duration: 2 });
+                    gsap.to(uniforms.turbulence, { value: targetSpeed, duration: 2 });
+                    if (isAudioPlaying) windFilter.frequency.setTargetAtTime(targetWind, audioCtx.currentTime, 1);
+                }
+            });
+        });
+
+        // Удар дракона
+        ScrollTrigger.create({
+            trigger: "#dragon-trigger",
+            start: "top 40%",
+            onEnter: () => {
+                if (!impactPlayed) {
+                    playImpactSound();
+                    impactPlayed = true;
+                    // Тряска только текста (легкая)
+                    gsap.fromTo("#content", {x: -3}, {x: 3, duration: 0.1, yoyo: true, repeat: 10, clearProps: "x"});
+                }
+            },
+            onLeaveBack: () => { impactPlayed = false; }
+        });
+
+        /*
+        В будущем, когда у тебя будут реальные файлы, код будет выглядеть так:
+        ScrollTrigger.create({
+            trigger: "#scene-potions",
+            onEnter: () => { new Audio('sounds/glass_clink.mp3').play(); }
+        });
+        */
+    </script>
+</body>
+</html>
